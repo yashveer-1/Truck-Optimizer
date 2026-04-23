@@ -1,60 +1,128 @@
-export default function BottomPanel({ items = [] }) {
+export default function BottomPanel() {
   return (
-    <div className="h-[25%] bg-gray-800 p-4 overflow-auto">
+    <div className="grid grid-cols-3 gap-3 p-2">
 
-      <h2 className="text-lg font-semibold mb-3">
-        Item Table / Load Sequence
-      </h2>
+      {/* 🔹 TRUCK UTILIZATION */}
+      <div className="bg-[#0F213F] p-4 rounded-xl">
+        <h2 className="text-sm text-gray-300 mb-3">
+          TRUCK UTILIZATION
+        </h2>
 
-      {items.length === 0 ? (
-        <p className="text-gray-400">No items loaded</p>
-      ) : (
-        <table className="w-full text-sm text-left border-collapse">
-          
+        <div className="flex justify-around">
+
+          {/* Weight */}
+          <div className="text-center">
+            <div className="w-24 h-24 rounded-full border-[10px] border-green-500 border-t-gray-600 flex items-center justify-center">
+              <span className="text-white font-semibold">99%</span>
+            </div>
+            <p className="text-xs mt-2 text-gray-400">
+              8,920 / 9,000 kg
+            </p>
+          </div>
+
+          {/* Volume */}
+          <div className="text-center">
+            <div className="w-24 h-24 rounded-full border-[10px] border-green-400 border-t-gray-600 flex items-center justify-center">
+              <span className="text-white font-semibold">70%</span>
+            </div>
+            <p className="text-xs mt-2 text-gray-400">
+              19.6 / 28.0 m³
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 🔹 CONSTRAINT CHECK */}
+      <div className="bg-[#0F213F] p-4 rounded-xl">
+        <h2 className="text-sm text-gray-300 mb-3">
+          CONSTRAINT CHECK
+        </h2>
+
+        <div className="space-y-2 text-sm">
+
+          <div className="flex justify-between">
+            <span>Weight Limit</span>
+            <span className="text-green-400">✔ Passed</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Volume Limit</span>
+            <span className="text-green-400">✔ Passed</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Axle Load</span>
+            <span className="text-green-400">✔ Passed</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Stacking Rules</span>
+            <span className="text-green-400">✔ Passed</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Stability Check</span>
+            <span className="text-green-400">✔ Passed</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Delivery Sequence</span>
+            <span className="text-green-400">✔ Passed</span>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 🔹 ORDER ALLOCATION */}
+      <div className="bg-[#0F213F] p-4 rounded-xl">
+        <h2 className="text-sm text-gray-300 mb-3">
+          ORDER ALLOCATION
+        </h2>
+
+        <table className="w-full text-xs text-gray-300">
           <thead>
-            <tr className="text-gray-400 border-b border-gray-600">
-              <th className="py-2">#</th>
-              <th>ID</th>
-              <th>Priority</th>
+            <tr className="text-gray-500">
+              <th>Order</th>
+              <th>%</th>
               <th>Weight</th>
-              <th>Position</th>
-              <th>Dimensions</th>
+              <th>Vol</th>
             </tr>
           </thead>
 
           <tbody>
-            {items.map((item, index) => (
-              <tr
-                key={item.id}
-                className="border-b border-gray-700 hover:bg-gray-700"
-              >
-                <td className="py-2">{index + 1}</td>
+            <tr>
+              <td>O-10045</td>
+              <td>100%</td>
+              <td>1,840</td>
+              <td>4.10</td>
+            </tr>
 
-                <td>{item.id}</td>
+            <tr>
+              <td>O-10046</td>
+              <td>100%</td>
+              <td>2,130</td>
+              <td>4.80</td>
+            </tr>
 
-                <td>
-                  {item.priority === 3 && "🔴 High"}
-                  {item.priority === 2 && "🟡 Medium"}
-                  {item.priority === 1 && "🔵 Low"}
-                </td>
+            <tr>
+              <td>O-10047</td>
+              <td>100%</td>
+              <td>1,100</td>
+              <td>2.20</td>
+            </tr>
 
-                <td>
-                  {item.weight ? `${item.weight} kg` : "—"}
-                </td>
-
-                <td>
-                  ({item.x}, {item.y}, {item.z})
-                </td>
-
-                <td>
-                  {item.length} × {item.width} × {item.height}
-                </td>
-              </tr>
-            ))}
+            <tr>
+              <td>O-10048</td>
+              <td>100%</td>
+              <td>3,850</td>
+              <td>8.78</td>
+            </tr>
           </tbody>
-
         </table>
-      )}
+
+      </div>
+
     </div>
   );
 }
