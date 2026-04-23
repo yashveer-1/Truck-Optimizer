@@ -29,30 +29,8 @@ export default function Sidebar({ setItems, setStats }) {
   return (
     <div className="p-3 space-y-4 text-xs overflow-auto h-full">
 
-      {/* 🔥 JSON UPLOADER */}
-      <div className="bg-[#0F213F] p-4 rounded-xl space-y-2">
-        <h2 className="text-sm font-semibold text-gray-300">
-          LOAD DATA (JSON)
-        </h2>
-
-        <textarea
-          className="w-full h-28 bg-[#132A4A] p-2 rounded text-xs"
-          placeholder="Paste JSON here..."
-          value={jsonInput}
-          onChange={(e) => setJsonInput(e.target.value)}
-        />
-
-        <button
-          onClick={handleLoad}
-          className="w-full bg-blue-600 py-2 rounded text-white"
-        >
-          Load Data
-        </button>
-      </div>
-
       {/* LOAD PLAN DETAILS */}
       <div className="bg-[#0F213F] p-4 rounded-xl space-y-3">
-
         <h2 className="text-sm font-semibold text-gray-300">
           LOAD PLAN DETAILS
         </h2>
@@ -71,9 +49,7 @@ export default function Sidebar({ setItems, setStats }) {
           </select>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-2 gap-3">
-
           <div className="bg-[#132A4A] p-3 rounded">
             <p className="text-gray-400">Total Weight</p>
             <p className="text-white font-semibold">8,920 / 9,000 kg</p>
@@ -99,13 +75,11 @@ export default function Sidebar({ setItems, setStats }) {
             <p>No. of Drops</p>
             <p className="text-white font-semibold">4</p>
           </div>
-
         </div>
       </div>
 
       {/* SKU LIST */}
       <div className="bg-[#0F213F] p-4 rounded-xl">
-
         <div className="flex justify-between mb-2">
           <h2 className="text-sm font-semibold text-gray-300">
             SKU LIST (12)
@@ -133,21 +107,18 @@ export default function Sidebar({ setItems, setStats }) {
               <td>4620</td>
               <td>5.50</td>
             </tr>
-
             <tr>
               <td>Pail 20L</td>
               <td>40</td>
               <td>800</td>
               <td>1.60</td>
             </tr>
-
             <tr>
               <td>Pail 10L</td>
               <td>20</td>
               <td>240</td>
               <td>0.48</td>
             </tr>
-
             <tr>
               <td>Carton 4L</td>
               <td>120</td>
@@ -163,12 +134,10 @@ export default function Sidebar({ setItems, setStats }) {
           <span>8,920</span>
           <span>19.88</span>
         </div>
-
       </div>
 
       {/* LOAD SEQUENCE */}
       <div className="bg-[#0F213F] p-4 rounded-xl">
-
         <h2 className="text-sm font-semibold text-gray-300 mb-2">
           LOAD SEQUENCE (For Delivery)
         </h2>
@@ -188,13 +157,11 @@ export default function Sidebar({ setItems, setStats }) {
               <td>Hosur</td>
               <td>Cartons, Pail 10L</td>
             </tr>
-
             <tr>
               <td>2</td>
               <td>Krishnagiri</td>
               <td>Pail 20L</td>
             </tr>
-
             <tr>
               <td>3</td>
               <td>Dharmapuri</td>
@@ -206,7 +173,27 @@ export default function Sidebar({ setItems, setStats }) {
         <p className="text-gray-500 mt-2">
           Note: Load sequence is LIFO
         </p>
+      </div>
 
+      {/* 🔥 JSON LOADER (ONLY AT BOTTOM) */}
+      <div className="bg-[#0F213F] p-4 rounded-xl space-y-2">
+        <h2 className="text-sm font-semibold text-gray-300">
+          LOAD DATA (JSON)
+        </h2>
+
+        <textarea
+          className="w-full h-32 bg-[#132A4A] p-2 rounded text-xs"
+          placeholder="Paste JSON here..."
+          value={jsonInput}
+          onChange={(e) => setJsonInput(e.target.value)}
+        />
+
+        <button
+          onClick={handleLoad}
+          className="w-full bg-blue-600 py-2 rounded text-white"
+        >
+          Load Data
+        </button>
       </div>
 
     </div>
