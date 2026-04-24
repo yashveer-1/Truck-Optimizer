@@ -12,106 +12,115 @@ app.get("/", (req, res) => {
 });
 
 
-// ✅ OPTIMIZATION FUNCTION
+// 🔥 HELPER → TRY ROTATIONS
+function getRotations(item) {
+  const dims = [item.length, item.width, item.height];
+  const uniqueRotations = new Set();
+
+  const permutations = [
+    [0, 1, 2],
+    [0, 2, 1],
+    [1, 0, 2],
+    [1, 2, 0],
+    [2, 0, 1],
+    [2, 1, 0]
+  ];
+
+  permutations.forEach(([l, w, h]) => {
+    const key = `${dims[l]}-${dims[w]}-${dims[h]}`;
+    if (!uniqueRotations.has(key)) {
+      uniqueRotations.add(key);
+      uniqueRotations.add(key);
+    }
+  });
+
+  return Array.from(uniqueRotations).map(rotation => {
+    const [l, w, h] = rotation.split("-").map(Number);
+    return { l, w, h };
+  });
+}
+
+
+// 🔥 SORT SPACES (BEST-FIT STRATEGY)
+function sortSpaces(spaces) {
+  return spaces.sort((a, b) => {
+    const volA = a.length * a.width * a.height;
+    const volB = b.length * b.width * b.height;
+    return volA - volB; // smallest space first
+  });
+}
+
+
+// ✅ OPTIMIZATION FUNCTION (IMPROVED)
 function optimizeTruck(data) {
   const { truck, items } = data;
 
   if (!truck || !items) {
-    throw new Error("Invalid input: truck or items missing");
+    throw new Error("Invalid input");
   }
 
-  // ✅ do NOT mutate original items
-  const sortedItems = [...items].sort((a, b) => b.priority - a.priority);
+  // 🔥 SORT BIG → SMALL
+  const sortedItems = [...items].sort(
+    (a, b) => (b.length * b.width) - (a.length * a.width)
+  );
 
   let placements = [];
 
-  // initial space = full truck
-  let spaces = [
-    {
-      x: 0,
-      y: 0,
-      z: 0,
-      length: truck.length,
-      width: truck.width,
-      height: truck.height
-    }
-  ];
+  let x = 0, z = 0, y = 0;
+  let rowDepth = 0;
+  let layerHeight = 0;
 
-  // 🔁 place items
   sortedItems.forEach(item => {
     let placed = false;
 
-    for (let i = 0; i < spaces.length; i++) {
-      let space = spaces[i];
+    const rotations = getRotations(item);
 
-      // ✅ check fit
-      if (
-        item.length <= space.length &&
-        item.width <= space.width &&
-        item.height <= space.height
-      ) {
+    for (let rot of rotations) {
 
-        // ✅ place item
-        placements.push({
-          ...item,
-          x: space.x,
-          y: space.y,
-          z: space.z
-        });
-
-        // remove used space
-        spaces.splice(i, 1);
-
-        // ✅ SAFE SPACE SPLITTING
-
-        // Right space
-        if (space.length - item.length > 0) {
-          spaces.push({
-            x: space.x + item.length,
-            y: space.y,
-            z: space.z,
-            length: space.length - item.length,
-            width: space.width,
-            height: space.height
-          });
-        }
-
-        // Front space
-        if (space.width - item.width > 0) {
-          spaces.push({
-            x: space.x,
-            y: space.y,
-            z: space.z + item.width,
-            length: item.length,
-            width: space.width - item.width,
-            height: space.height
-          });
-        }
-
-        // Top space
-        if (space.height - item.height > 0) {
-          spaces.push({
-            x: space.x,
-            y: space.y + item.height,
-            z: space.z,
-            length: item.length,
-            width: item.width,
-            height: space.height - item.height
-          });
-        }
-
-        placed = true;
-        break;
+      // 👉 next row
+      if (x + rot.l > truck.length) {
+        x = 0;
+        z += rowDepth;
+        rowDepth = 0;
       }
+
+      // 👉 next layer
+      if (z + rot.w > truck.width) {
+        z = 0;
+        x = 0;
+        y += layerHeight;
+        layerHeight = 0;
+      }
+
+      // 👉 cannot fit vertically
+      if (y + rot.h > truck.height) continue;
+
+      // ✅ PLACE
+      placements.push({
+        ...item,
+        length: rot.l,
+        width: rot.w,
+        height: rot.h,
+        x,
+        y,
+        z
+      });
+
+      x += rot.l;
+
+      rowDepth = Math.max(rowDepth, rot.w);
+      layerHeight = Math.max(layerHeight, rot.h);
+
+      placed = true;
+      break;
     }
 
-    // ⚠️ if item cannot be placed
     if (!placed) {
-      console.warn("Item could not be placed:", item.id);
+      console.warn("❌ Could not place:", item.id);
     }
   });
 
-  // ✅ CALCULATE STATS (ONLY PLACED ITEMS)
+  // ✅ STATS
   let totalVolume = 0;
   let totalWeight = 0;
 
@@ -122,15 +131,15 @@ function optimizeTruck(data) {
 
   const truckVolume = truck.length * truck.width * truck.height;
 
-  const stats = {
-    spaceUtilization: ((totalVolume / truckVolume) * 100).toFixed(2),
-    totalItems: placements.length,
-    totalWeight
+  return {
+    placements,
+    stats: {
+      spaceUtilization: ((totalVolume / truckVolume) * 100).toFixed(2),
+      totalItems: placements.length,
+      totalWeight
+    }
   };
-
-  return { placements, stats };
 }
-
 
 // ✅ API ROUTE
 app.post("/optimize", (req, res) => {

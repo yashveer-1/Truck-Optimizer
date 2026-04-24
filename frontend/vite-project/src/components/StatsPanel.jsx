@@ -1,116 +1,89 @@
-export default function StatsPanel() {
+import LayerInformation from "./RightSideBarComponents/LayerInformation";
+import Legend from "./RightSideBarComponents/Legend";
+import GapAnalysis from "./RightSideBarComponents/GapAnalysis";
+import ActionsPanel from "./RightSideBarComponents/ActionsPanel";
+
+export default function StatsPanel({ rawItems = [] }) {
+  const layerNameMap = {
+    top: { label: "Top Layer", color: "bg-purple-500" },
+    middle: { label: "Middle Layer", color: "bg-green-500" },
+    base: { label: "Base Layer", color: "bg-blue-400" },
+    1: { label: "Top Layer", color: "bg-purple-500" },
+    2: { label: "Middle Layer", color: "bg-green-500" },
+    3: { label: "Base Layer", color: "bg-blue-400" }
+  };
+
+  const hasLayerInfo = rawItems.some(item => {
+    const rawLayer = item.layer?.toString().toLowerCase();
+    return rawLayer && layerNameMap[rawLayer];
+  });
+
+  const layerCounts = hasLayerInfo
+    ? rawItems.reduce((acc, item) => {
+      const rawLayer = item.layer?.toString().toLowerCase();
+      if (rawLayer && layerNameMap[rawLayer]) {
+        acc[rawLayer] = (acc[rawLayer] || 0) + 1;
+      }
+      return acc;
+    }, {})
+    : {};
+
+  const defaultCounts = rawItems.length
+    ? {
+      top: Math.max(0, Math.floor(rawItems.length * 0.33)),
+      middle: Math.max(0, Math.floor(rawItems.length * 0.33)),
+      base: Math.max(0, rawItems.length - Math.floor(rawItems.length * 0.33) * 2)
+    }
+    : { top: 0, middle: 0, base: 0 };
+
+  const layerData = [
+    { ...layerNameMap.top, count: hasLayerInfo ? layerCounts.top || 0 : defaultCounts.top },
+    { ...layerNameMap.middle, count: hasLayerInfo ? layerCounts.middle || 0 : defaultCounts.middle },
+    { ...layerNameMap.base, count: hasLayerInfo ? layerCounts.base || 0 : defaultCounts.base }
+  ];
+
+  const legendDefinitions = {
+    drum: { label: "Drums (210L / 50L)", color: "bg-blue-500" },
+    pail: { label: "Pails / Buckets", color: "bg-yellow-400" },
+    grease: { label: "Grease Pails", color: "bg-green-500" },
+    box: { label: "Cartons / Boxes", color: "bg-purple-500" },
+    block: { label: "Grease Blocks", color: "bg-red-500" }
+  };
+
+  const legendCounts = rawItems.reduce((acc, item) => {
+    const typeKey = item.type?.toString().toLowerCase();
+    if (typeKey && legendDefinitions[typeKey]) {
+      acc[typeKey] = (acc[typeKey] || 0) + 1;
+    }
+    return acc;
+  }, {});
+
+  const legendItems = Object.entries(legendDefinitions)
+    .filter(([key]) => rawItems.length === 0 || legendCounts[key] > 0)
+    .map(([key, value]) => ({
+      ...value,
+      count: legendCounts[key] || 0
+    }));
+
   return (
     <div className="p-3 space-y-4 text-sm">
 
       {/* 🔹 LAYER INFORMATION */}
-      <div className="bg-[#0F213F] p-4 rounded-xl">
-        <h2 className="text-gray-300 font-semibold mb-3">
-          LAYER INFORMATION
-        </h2>
-
-        <div className="space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-            <span>Top Layer (3)</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <span>Middle Layer (2)</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-400"></div>
-            <span>Base Layer (1)</span>
-          </div>
-        </div>
-      </div>
+      <LayerInformation layers={layerData} />
 
       {/* 🔹 LEGEND */}
-      <div className="bg-[#0F213F] p-4 rounded-xl">
-        <h2 className="text-gray-300 font-semibold mb-3">
-          LEGEND (SKU GROUP)
-        </h2>
-
-        <div className="space-y-2">
-
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-blue-500 rounded"></div>
-            <span>Drums (210L / 50L)</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-yellow-400 rounded"></div>
-            <span>Pails / Buckets</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-green-500 rounded"></div>
-            <span>Grease Pails</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-purple-500 rounded"></div>
-            <span>Cartons / Boxes</span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="w-4 h-4 bg-red-500 rounded"></div>
-            <span>Grease Blocks</span>
-          </div>
-
-        </div>
-      </div>
+      <Legend items={legendItems} />
 
       {/* 🔹 GAP ANALYSIS */}
-      <div className="bg-[#0F213F] p-4 rounded-xl">
-        <h2 className="text-gray-300 font-semibold mb-3">
-          GAP ANALYSIS
-        </h2>
-
-        <div className="text-xs mb-3">
-          <p>Total Unutilized Volume</p>
-          <p className="text-red-400 font-semibold">
-            8.4 m³ (29.9%)
-          </p>
-        </div>
-
-        {/* Fake Pie Chart */}
-        <div className="flex items-center gap-4">
-
-          <div className="w-20 h-20 rounded-full bg-gradient-to-r from-purple-500 via-blue-400 to-yellow-400"></div>
-
-          <div className="text-xs space-y-1">
-            <p>🔵 Left Gap: 3.1 m³</p>
-            <p>🟡 Top Gap: 4.0 m³</p>
-            <p>🟣 Side Gap: 1.3 m³</p>
-          </div>
-
-        </div>
-      </div>
+      <GapAnalysis rawItems={rawItems} />
 
       {/* 🔹 ACTIONS */}
-      <div className="bg-[#0F213F] p-4 rounded-xl space-y-2">
-        <h2 className="text-gray-300 font-semibold mb-2">
-          ACTIONS
-        </h2>
-
-        <button className="w-full bg-blue-600 py-2 rounded">
-          Optimize Load
-        </button>
-
-        <button className="w-full bg-[#132A4A] py-2 rounded">
-          Rebuild Load
-        </button>
-
-        <button className="w-full bg-[#132A4A] py-2 rounded">
-          Export Load Plan
-        </button>
-
-        <button className="w-full bg-[#132A4A] py-2 rounded">
-          Print / Share
-        </button>
-      </div>
+      <ActionsPanel
+        onOptimize={() => console.log("Optimize Load")}
+        onRebuild={() => console.log("Rebuild Load")}
+        onExport={() => console.log("Export Load Plan")}
+        onPrint={() => console.log("Print / Share")}
+      />
 
     </div>
   );

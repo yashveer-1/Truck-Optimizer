@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Html } from "@react-three/drei";
 
-export default function Box({ position, size, priority, id }) {
+export default function Box({ position, size, priority, id, color }) {
   const [hovered, setHovered] = useState(false);
 
-  const getColor = () => {
+  // fallback if color not passed
+  const getDefaultColor = () => {
     if (priority === 3) return "red";
     if (priority === 2) return "yellow";
     return "blue";
@@ -18,7 +19,11 @@ export default function Box({ position, size, priority, id }) {
       onPointerOut={() => setHovered(false)}
     >
       <boxGeometry args={size} />
-      <meshStandardMaterial color={hovered ? "white" : getColor()} />
+
+      {/* ✅ USE PASSED COLOR */}
+      <meshStandardMaterial
+        color={hovered ? "white" : (color || getDefaultColor())}
+      />
 
       {/* 🔥 Tooltip */}
       {hovered && (

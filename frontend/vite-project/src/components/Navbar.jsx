@@ -26,7 +26,6 @@ export default function Navbar() {
         <div className="flex items-center gap-4 text-sm text-gray-600">
 
           <select className="bg-gray-100 px-2 py-1 rounded">
-            <option>Bengaluru Hub</option>
             <option>Mumbai Hub</option>
             <option>Chennai Hub</option>
             <option>Kolkata Hub</option>
