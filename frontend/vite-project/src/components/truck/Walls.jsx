@@ -6,20 +6,26 @@ export default function Walls({
   return (
     <group>
 
-      {/* Left Wall (always visible) */}
-      <mesh position={[0, 130, -120]}>
+      {/* Left Wall (semi-transparent for visibility) */}
+      <mesh position={[0, 130, -120]} receiveShadow>
         <boxGeometry args={[800, 260, 5]} />
-        <meshStandardMaterial color="#374151" />
+        <meshStandardMaterial
+          color="#374151"
+          transparent
+          opacity={opacity}
+          roughness={0.7}
+        />
       </mesh>
 
       {/* Right Wall (optional) */}
       {showRightWall && (
-        <mesh position={[0, 130, 120]}>
+        <mesh position={[0, 130, 120]} receiveShadow>
           <boxGeometry args={[800, 260, 5]} />
           <meshStandardMaterial
             color="#374151"
             transparent
             opacity={opacity}
+            roughness={0.7}
           />
         </mesh>
       )}

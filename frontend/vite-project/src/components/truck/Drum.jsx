@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Html } from "@react-three/drei";
+import { Html, Edges } from "@react-three/drei";
 
 export default function Drum({
   position = [0, 0, 0],
@@ -7,26 +7,36 @@ export default function Drum({
   height = 90,
   color = "red",
   id = "",
-  priority = 1
+  priority = 1,
+  selected = false,
+  onSelect
 }) {
   const [hovered, setHovered] = useState(false);
+  const isActive = hovered || selected;
 
   return (
     <group
       position={position}
-      scale={hovered ? 1.1 : 1}
+      scale={isActive ? 1.05 : 1}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
+      onPointerDown={(event) => {
+        event.stopPropagation();
+        onSelect?.();
+      }}
     >
 
       {/* 🔴 MAIN CYLINDER */}
-      <mesh>
+      <mesh castShadow receiveShadow>
         <cylinderGeometry args={[radius, radius, height, 32]} />
         <meshStandardMaterial
           color={hovered ? "white" : color}
+          emissive={selected ? "#374151" : "#000000"}
+          emissiveIntensity={selected ? 0.2 : 0}
           metalness={0.5}
           roughness={0.3}
         />
+        <Edges color={isActive ? "#f8fafc" : "#9ca3af"} />
       </mesh>
 
       {/* 🔘 TOP CAP */}
@@ -42,8 +52,8 @@ export default function Drum({
       </mesh>
 
       {/* 🔥 TOOLTIP */}
-      {hovered && (
-        <Html distanceFactor={10}>
+      {(hovered || selected) && (
+        <Html distanceFactor={10} center>
           <div className="bg-black text-white text-xs p-2 rounded">
             <p>ID: {id}</p>
             <p>Type: Drum</p>

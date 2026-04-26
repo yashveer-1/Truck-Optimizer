@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import * as XLSX from "xlsx";
 import LoadPlanDetails from "./LeftSideBarComponents/LoadPlanDetails";
-import LoadSequence from "./LeftSideBarComponents/LoadSequence";
 import SkuList from "./LeftSideBarComponents/SkuList";
 import UploadExcel from "./LeftSideBarComponents/UploadExcel";
 
@@ -124,10 +123,8 @@ export default function Sidebar({
         selectedHub={selectedHub}
       />
 
-      {/* 🔥 FILTERED DATA USED BELOW */}
+      {/* FILTERED DATA USED BELOW */}
       <SkuList rawItems={filteredItems} />
-
-      <LoadSequence rawItems={filteredItems} />
 
       <UploadExcel onUpload={handleExcelUpload} />
 

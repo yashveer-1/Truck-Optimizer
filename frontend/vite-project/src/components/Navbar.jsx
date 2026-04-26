@@ -8,7 +8,13 @@ const HUBS = [
   { value: "Silvassa", label: "Silvasa Hub" }
 ];
 
-export default function Navbar({ selectedHub, setSelectedHub }) {
+export default function Navbar({ selectedHub, setSelectedHub, activePage, setActivePage }) {
+  const navTabs = [
+    { id: "home", label: "Home" },
+    { id: "orders", label: "Orders" },
+    { id: "reports", label: "Reports" }
+  ];
+
   return (
     <div>
 
@@ -68,22 +74,18 @@ export default function Navbar({ selectedHub, setSelectedHub }) {
 
           {/* Buttons */}
           <div className="flex gap-3">
-
-            <button className="px-4 py-1 rounded-md bg-[#132A4A] text-white border border-blue-500">
-              Home            </button>
-
-            <button className="px-4 py-1 rounded-md bg-[#132A4A] text-gray-300 hover:text-white border border-transparent hover:border-blue-400">
-              Plan Summary
-            </button>
-
-            <button className="px-4 py-1 rounded-md bg-[#132A4A] text-gray-300 hover:text-white border border-transparent hover:border-blue-400">
-              Orders
-            </button>
-
-            <button className="px-4 py-1 rounded-md bg-[#132A4A] text-gray-300 hover:text-white border border-transparent hover:border-blue-400">
-              Reports
-            </button>
-
+            {navTabs.map((tab) => {
+              const isActive = activePage === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActivePage(tab.id)}
+                  className={`px-4 py-1 rounded-md border transition ${isActive ? "bg-blue-500 text-white border-blue-500" : "bg-[#132A4A] text-gray-300 border-transparent hover:text-white hover:border-blue-400"}`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </div>
 
         </div>

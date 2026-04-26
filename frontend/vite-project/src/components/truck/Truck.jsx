@@ -17,13 +17,19 @@ const getColor = (item, index) => {
   return "orange";                       // top
 };
 
-export default function Truck({ items = [] }) {
+export default function Truck({
+  items = [],
+  showWalls = true,
+  showTop = true,
+  selectedItem,
+  onSelectItem
+}) {
   return (
     <group>
 
       {/* 🔹 TRUCK STRUCTURE */}
       <Floor />
-      <Walls showRightWall={false} showTop={false} />
+      <Walls showRightWall={showWalls} showTop={showTop} opacity={0.15} />
       <Gate />
 
       {/* 🔹 ITEMS */}
@@ -49,6 +55,8 @@ export default function Truck({ items = [] }) {
               radius={item.length / 2}
               height={item.height}
               color={color}
+              selected={selectedItem === item.id}
+              onSelect={() => onSelectItem?.(item.id)}
             />
           );
         }
@@ -62,6 +70,8 @@ export default function Truck({ items = [] }) {
             size={[item.length, item.height, item.width]}
             priority={item.priority}
             color={color}             // 🔥 THIS was missing earlier
+            selected={selectedItem === item.id}
+            onSelect={() => onSelectItem?.(item.id)}
           />
         );
       })}
