@@ -1,7 +1,14 @@
 import logo from "../assets/hpcl.png";
 import { Home } from "lucide-react";
 
-export default function Navbar() {
+const HUBS = [
+  { value: "Mumbai", label: "Mumbai Hub" },
+  { value: "Chennai", label: "Chennai Hub" },
+  { value: "Kolkata", label: "Kolkata Hub" },
+  { value: "Silvassa", label: "Silvasa Hub" }
+];
+
+export default function Navbar({ selectedHub, setSelectedHub }) {
   return (
     <div>
 
@@ -25,11 +32,16 @@ export default function Navbar() {
         {/* Right */}
         <div className="flex items-center gap-4 text-sm text-gray-600">
 
-          <select className="bg-gray-100 px-2 py-1 rounded">
-            <option>Mumbai Hub</option>
-            <option>Chennai Hub</option>
-            <option>Kolkata Hub</option>
-            <option>Silvasa Hub</option>
+          <select
+            className="bg-gray-100 px-2 py-1 rounded"
+            value={selectedHub}
+            onChange={(e) => setSelectedHub(e.target.value)}
+          >
+            {HUBS.map((hub) => (
+              <option key={hub.value} value={hub.value}>
+                {hub.label}
+              </option>
+            ))}
           </select>
 
           <input
@@ -58,7 +70,7 @@ export default function Navbar() {
           <div className="flex gap-3">
 
             <button className="px-4 py-1 rounded-md bg-[#132A4A] text-white border border-blue-500">
-Home            </button>
+              Home            </button>
 
             <button className="px-4 py-1 rounded-md bg-[#132A4A] text-gray-300 hover:text-white border border-transparent hover:border-blue-400">
               Plan Summary

@@ -1,9 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Navbar from "../components/Navbar";
 import Sidebar from "../components/Sidebar";
 import MainView from "../components/MainView";
 import StatsPanel from "../components/StatsPanel";
 import BottomBar from "../components/BottomBar";
+
+const HUB_PREFIXES = {
+  Mumbai: "MH",
+  Chennai: "TN",
+  Kolkata: "WB",
+  Silvassa: "DN"
+};
+
+const getHubPrefix = (hub) => {
+  const key = hub?.replace(/\s*Hub$/i, "") || "";
+  return HUB_PREFIXES[key] || key.slice(0, 2).toUpperCase();
+};
 
 export default function Dashboard() {
   const [items, setItems] = useState([]);
@@ -20,19 +32,35 @@ export default function Dashboard() {
   // 🔥 SELECTED TRUCK (GLOBAL STATE)
   const [selectedVehicle, setSelectedVehicle] = useState("");
 
+  const [selectedHub, setSelectedHub] = useState("Mumbai");
+
   const getTruckKey = (item) =>
     item.vehicleNo || item.truckId || item.vehicle || item.plate || "";
 
-  // 🔥 AUTO SELECT FIRST VEHICLE AFTER UPLOAD
+  const selectedHubPrefix = getHubPrefix(selectedHub);
+
+  const hubRawItems = useMemo(
+    () => rawItems.filter((item) =>
+      getTruckKey(item).startsWith(selectedHubPrefix)
+    ),
+    [rawItems, selectedHubPrefix]
+  );
+
+  // 🔥 AUTO SELECT FIRST VEHICLE AFTER UPLOAD / HUB CHANGE
   useEffect(() => {
-    if (rawItems.length > 0) {
-      const firstVehicle = getTruckKey(rawItems[0]);
+    if (!hubRawItems.length) return;
+    const firstVehicle = getTruckKey(hubRawItems[0]);
+    const currentVehicleIsHubItem = hubRawItems.some(
+      (item) => getTruckKey(item) === selectedVehicle
+    );
+
+    if (!selectedVehicle || !currentVehicleIsHubItem) {
       setSelectedVehicle(firstVehicle);
     }
-  }, [rawItems]);
+  }, [hubRawItems, selectedVehicle]);
 
   // 🔥 FILTER DATA BASED ON SELECTED TRUCK
-  const filteredItems = rawItems.filter(
+  const filteredItems = hubRawItems.filter(
     (item) => getTruckKey(item) === selectedVehicle
   );
 
@@ -40,7 +68,7 @@ export default function Dashboard() {
     <div className="h-screen flex flex-col bg-[#0B1220] text-white">
 
       {/* 🔹 NAVBAR */}
-      <Navbar />
+      <Navbar selectedHub={selectedHub} setSelectedHub={setSelectedHub} />
 
       {/* 🔹 MAIN LAYOUT */}
       <div className="flex flex-1 overflow-hidden">
@@ -52,7 +80,7 @@ export default function Dashboard() {
             setStats={setStats}
             setRawItems={setRawItems}
 
-            rawItems={rawItems}
+            rawItems={hubRawItems}
 
             // 🔥 PASS GLOBAL STATE
             selectedVehicle={selectedVehicle}
