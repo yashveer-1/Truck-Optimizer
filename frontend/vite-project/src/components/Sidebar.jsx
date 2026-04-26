@@ -13,7 +13,8 @@ export default function Sidebar({
 
   // 🔥 NEW (from Dashboard)
   selectedVehicle,
-  setSelectedVehicle
+  setSelectedVehicle,
+  selectedHub
 }) {
   const getTruckKey = (item) =>
     item.vehicleNo || item.truckId || item.vehicle || item.plate || "";
@@ -120,6 +121,7 @@ export default function Sidebar({
         rawItems={rawItems}
         selectedVehicle={selectedVehicle}
         setSelectedVehicle={setSelectedVehicle}
+        selectedHub={selectedHub}
       />
 
       {/* 🔥 FILTERED DATA USED BELOW */}

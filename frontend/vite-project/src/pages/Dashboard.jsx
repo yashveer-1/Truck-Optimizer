@@ -85,6 +85,7 @@ export default function Dashboard() {
             // 🔥 PASS GLOBAL STATE
             selectedVehicle={selectedVehicle}
             setSelectedVehicle={setSelectedVehicle}
+            selectedHub={selectedHub}
           />
         </div>
 

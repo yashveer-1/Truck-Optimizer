@@ -3,7 +3,8 @@ import { useMemo, useEffect } from "react";
 export default function LoadPlanDetails({
   rawItems = [],
   selectedVehicle,
-  setSelectedVehicle
+  setSelectedVehicle,
+  selectedHub
 }) {
 
   // 🔥 UNIQUE VEHICLES FROM CSV
@@ -40,17 +41,20 @@ export default function LoadPlanDetails({
   const selectedRoute = useMemo(() => {
     if (!filteredItems.length) return "";
 
-    const route = [
-      "Bengaluru",
-      ...[...new Set(
-        [...filteredItems]
-          .sort((a, b) => (a.priority || 0) - (b.priority || 0))
-          .map(i => i.location)
-      )]
-    ];
+    const hubStart = selectedHub || "";
+    const locations = [...new Set(
+      [...filteredItems]
+        .sort((a, b) => (a.priority || 0) - (b.priority || 0))
+        .map(i => i.location)
+        .filter(Boolean)
+    )];
+
+    const route = locations[0] === hubStart
+      ? locations
+      : [hubStart, ...locations.filter((loc) => loc !== hubStart)];
 
     return route.join(" → ");
-  }, [filteredItems]);
+  }, [filteredItems, selectedHub]);
 
   // 🔥 CALCULATIONS
   const totalWeight = filteredItems.reduce(
@@ -107,11 +111,12 @@ export default function LoadPlanDetails({
         className="w-full bg-[#132A4A] p-2 rounded text-gray-300"
       />
 
-      <input
-        value={selectedRoute}
-        disabled
-        className="w-full bg-[#132A4A] p-2 rounded text-gray-300"
-      />
+      <div
+        title={selectedRoute}
+        className="w-[95%] min-h-[2.5rem] overflow-x-auto whitespace-nowrap rounded bg-[#132A4A] p-2 text-gray-300"
+      >
+        {selectedRoute || "No route available"}
+      </div>
 
       {/* 🔹 STATS */}
       <div className="grid grid-cols-2 gap-3">
